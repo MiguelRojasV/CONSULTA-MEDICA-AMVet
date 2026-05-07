@@ -30,6 +30,7 @@ class PropietarioCreate(BaseModel):
 
 class PropietarioOut(PropietarioCreate):
     id: int
+    rol: str = "propietario"
     class Config:
         from_attributes = True
 

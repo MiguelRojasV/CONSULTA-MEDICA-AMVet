@@ -54,23 +54,28 @@ const [user, setUser] = useState(() => {
 
   const t = res.data.access_token;
   
-  // 1. Preparamos el objeto de usuario
   const userData = {
     nombre: res.data.nombre,
     rol: res.data.rol,
     propietario_id: res.data.propietario_id
   };
-localStorage.setItem('amvet_token', t);
-  localStorage.setItem('amvet_user', JSON.stringify(userData)); // <-- AGREGA ESTA LÍNEA
+
+  // 2. Persistencia en disco (para cuando el usuario cierre el navegador)
+  localStorage.setItem('amvet_token', t);
+  localStorage.setItem('amvet_user', JSON.stringify(userData));
   
+  // 3. Configuración de Axios para futuras peticiones
   api.defaults.headers.common['Authorization'] = `Bearer ${t}`;
-  
-  // 3. ACTUALIZACIÓN DE ESTADOS
+
+  // --- LOS AJUSTES CLAVE VIENEN AQUÍ ---
+
+  // 4. Actualizamos el estado de React INMEDIATAMENTE
+  // Esto hará que los botones de "Agregar" aparezcan al instante sin parpadeos
+  setUser(userData); 
   setToken(t);
-  setUser(userData);
   
-  // Opcional: Forzar que loading sea false ya que ya tenemos al usuario
-  setLoading(false); 
+  // 5. IMPORTANTE: Ponemos loading en false al final
+  setLoading(false);
 };
   const logout = () => {
     localStorage.removeItem('amvet_token')
