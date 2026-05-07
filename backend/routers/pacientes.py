@@ -6,7 +6,7 @@ import models, schemas
 
 router = APIRouter(prefix="/api/pacientes", tags=["pacientes"])
 
-@router.get("/")
+@router.get("")
 def listar(db: Session = Depends(get_db), user=Depends(get_current_user)):
     if user.rol == "admin":
         return db.query(models.Paciente).all()

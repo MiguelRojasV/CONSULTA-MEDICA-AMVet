@@ -17,7 +17,7 @@ from routers import (
 # 1. Crear las tablas de la base de datos
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="AMVet API")
+app = FastAPI(title="AMVet API",redirect_slashes=True)
 
 # 2. Configuración de CORS mejorada
 app.add_middleware(
@@ -33,16 +33,16 @@ os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # 4. Inclusión de rutas
-app.include_router(auth.router,prefix="/api/auth")
-app.include_router(propietarios.router,prefix="/api/propietarios")
-app.include_router(pacientes.router,prefix="/api/pacientes")
-app.include_router(citas.router,prefix="/api/citas")
-app.include_router(historial.router,prefix="/api/historial")
-app.include_router(recetas.router,prefix="/api/recetas")
-app.include_router(inventario.router,prefix="/api/inventario")
-app.include_router(seguimiento.router,prefix="/api/seguimiento")
-app.include_router(examenes.router,prefix="/api/examenes")
-app.include_router(reportes.router,prefix="/api/reportes")
+app.include_router(auth.router,prefix="/api/auth",tags=["auth"])
+app.include_router(propietarios.router,prefix="/api/propietarios",tags=["propietarios"])
+app.include_router(pacientes.router,prefix="/api/pacientes",tags=["pacientes"])
+app.include_router(citas.router,prefix="/api/citas",tags=["citas"])
+app.include_router(historial.router,prefix="/api/historial",tags=["historial"])
+app.include_router(recetas.router,prefix="/api/recetas",tags=["recetas"])
+app.include_router(inventario.router,prefix="/api/inventario",tags=["inventario"])
+app.include_router(seguimiento.router,prefix="/api/seguimiento",tags=["seguimiento"])
+app.include_router(examenes.router,prefix="/api/examenes",tags=["examenes"])
+app.include_router(reportes.router,prefix="/api/reportes",tags=["reportes"])
 
 # 5. Lógica del Administrador Inicial
 def crear_admin():

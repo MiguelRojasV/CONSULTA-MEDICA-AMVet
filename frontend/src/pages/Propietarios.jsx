@@ -45,7 +45,7 @@ export default function Propietarios() {
         await api.put(`/propietarios/${editing.id}`, form)
         toast.success('Propietario actualizado')
       } else {
-        await api.post('/propietarios/', form)
+        await api.post('/propietarios', form)
         toast.success('Propietario registrado')
       }
       setModal(false); load()

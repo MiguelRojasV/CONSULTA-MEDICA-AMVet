@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
-from auth import verify_password, hash_password, create_token
+from auth import verify_password, hash_password, create_token,get_current_user as get_user_from_token
 
 router = APIRouter(tags=["auth"])
 
@@ -30,3 +30,10 @@ def registro_propietario(data: schemas.UsuarioCreate, db: Session = Depends(get_
     db.add(prop)
     db.commit()
     return {"msg": "Propietario registrado correctamente"}
+
+@router.get("/me", response_model=schemas.PropietarioOut)
+def read_users_me(
+    # Usamos la función que importamos (get_user_from_token)
+    current_user: models.Usuario = Depends(get_user_from_token)
+):
+    return current_user

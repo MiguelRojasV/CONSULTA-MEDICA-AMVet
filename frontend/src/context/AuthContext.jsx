@@ -6,21 +6,33 @@ const AuthContext = createContext(null)
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('amvet_token'))
-  const [user, setUser] = useState(() => {
+const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('amvet_user');
-    return saved ? JSON.parse(saved) : null;
+    // Si hay algo guardado, lo usamos de inmediato para evitar el parpadeo
+    return (saved && saved !== "undefined") ? JSON.parse(saved) : null;
   });
   
   const [loading, setLoading] = useState(!user);
 
-  useEffect(() => {
-    if (token) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      fetchMe()
-    } else {
-      setLoading(false)
-    }
-  }, [token])
+ useEffect(() => {
+    const initAuth = async () => {
+      const savedToken = localStorage.getItem('amvet_token');
+      if (savedToken) {
+        api.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
+        try {
+          // IMPORTANTE: Asegúrate que esta ruta en el backend exista y funcione
+          const res = await api.get('auth/me'); 
+          setUser(res.data);
+          localStorage.setItem('amvet_user', JSON.stringify(res.data));
+        } catch (err) {
+          // Si el token no sirve, limpiamos todo
+          logout();
+        }
+      }
+      setLoading(false);
+    };
+    initAuth();
+  }, []);
 
   const fetchMe = async () => {
     try {
@@ -35,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   }
 
  const login = async (email, password) => {
-  const res = await api.post('/auth/login', {
+  const res = await api.post('auth/login', {
     email,
     password
   });

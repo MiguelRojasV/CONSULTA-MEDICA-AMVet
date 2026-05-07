@@ -6,14 +6,14 @@ import models, schemas
 
 router = APIRouter(prefix="/api/propietarios", tags=["propietarios"])
 
-@router.get("/")
+@router.get("",response_model=list[schemas.PropietarioOut])
 def listar(db: Session = Depends(get_db), user=Depends(get_current_user)):
     if user.rol == "admin":
         return db.query(models.Propietario).all()
     prop = db.query(models.Propietario).filter(models.Propietario.usuario_id == user.id).first()
     return [prop] if prop else []
 
-@router.post("/", response_model=schemas.PropietarioOut)
+@router.post("", response_model=schemas.PropietarioOut)
 def crear(data: schemas.PropietarioCreate, db: Session = Depends(get_db), user=Depends(require_admin)):
     p = models.Propietario(**data.model_dump())
     db.add(p); db.commit(); db.refresh(p)
