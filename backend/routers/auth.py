@@ -27,10 +27,17 @@ def registro_propietario(data: schemas.UsuarioCreate, db: Session = Depends(get_
     db.commit()
     db.refresh(user)
     prop = models.Propietario(usuario_id=user.id, nombre=data.nombre, correo=data.email)
-    db.add(prop)
-    db.commit()
-    return {"msg": "Propietario registrado correctamente"}
+    try:
+        db.add(prop)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        # Si falla crear el perfil, borramos el usuario para no dejar datos huérfanos
+        db.delete(user)
+        db.commit()
+        raise HTTPException(status_code=500, detail=f"Error al crear perfil: {str(e)}")
 
+    return {"msg": "Propietario registrado correctamente"}
 @router.get("/me", response_model=schemas.PropietarioOut)
 def read_users_me(
     # Usamos la función que importamos (get_user_from_token)
