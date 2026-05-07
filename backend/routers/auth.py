@@ -8,9 +8,15 @@ router = APIRouter(tags=["auth"])
 
 @router.post("/login", response_model=schemas.Token)
 def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(models.Usuario).filter(models.Usuario.email == data.email).first()
-    if not user or not verify_password(data.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+    user = db.query(models.Usuario).filter(models.Usuario.email == data.email.strip().lower()).first()
+    if not user:
+        print(f"DEBUG: El usuario {data.email} NO existe en la base de datos")
+        raise HTTPException(status_code=401, detail="Usuario no encontrado")
+        
+    if not verify_password(data.password, user.password_hash):
+        print(f"DEBUG: Contraseña incorrecta para {data.email}")
+        print(f"DEBUG: Hash en DB: {user.password_hash}")
+        raise HTTPException(status_code=401, detail="Contraseña incorrecta")
     propietario_id = None
     if user.propietario_perfil:
         propietario_id = user.propietario_perfil.id
@@ -26,10 +32,11 @@ def registro_propietario(data: schemas.UsuarioCreate, db: Session = Depends(get_
     db.add(user)
     db.commit()
     db.refresh(user)
-    prop = models.Propietario(usuario_id=user.id, nombre=data.nombre, correo=data.email)
+    prop = models.Propietario(usuario_id=user.id, nombre=user.nombre, correo=user.email)
     try:
         db.add(prop)
         db.commit()
+        return {"msg": "Registrado"}
     except Exception as e:
         db.rollback()
         # Si falla crear el perfil, borramos el usuario para no dejar datos huérfanos

@@ -5,29 +5,77 @@ import {
   FileText, Package, Activity, FlaskConical, BarChart3, LogOut
 } from 'lucide-react'
 import React from 'react';
-const NAV_ITEMS = [
-  { to: '/', icon: LayoutDashboard, label: 'Inicio', exact: true },
-  { to: '/citas', icon: Calendar, label: 'Citas' },
-  { to: '/pacientes', icon: PawPrint, label: 'Pacientes' },
-  { to: '/propietarios', icon: Users, label: 'Propietarios' },
-  { to: '/historial', icon: ClipboardList, label: 'Historial Clínico' },
-  { to: '/recetas', icon: FileText, label: 'Recetas' },
-  { to: '/seguimiento', icon: Activity, label: 'Seguimiento' },
-  { to: '/examenes', icon: FlaskConical, label: 'Exámenes' },
-  { to: '/inventario', icon: Package, label: 'Inventario', adminOnly: true },
-  { to: '/reportes', icon: BarChart3, label: 'Reportes', adminOnly: true },
-]
 
 export default function Sidebar() {
-  const { user, logout, isAdmin } = useAuth()
+  const { user, logout } = useAuth()
   const navigate = useNavigate()
+
+  // 1. Definimos si es admin
+  const isAdmin = user?.rol === 'admin';
+
+  // 2. Definimos los items DENTRO para que usen isAdmin en los labels
+  const NAV_ITEMS = [
+    { to: '/', icon: LayoutDashboard, label: 'Inicio', exact: true },
+    { 
+      to: '/citas', 
+      icon: Calendar, 
+      label: isAdmin ? 'Gestión de Citas' : 'Mis Citas' 
+    },
+    { 
+      to: '/pacientes', 
+      icon: PawPrint, 
+      label: isAdmin ? 'Pacientes' : 'Mis Mascotas' 
+    },
+    { 
+      to: '/propietarios', 
+      icon: Users, 
+      label: 'Propietarios', 
+      adminOnly: true 
+    },
+    { 
+      to: '/historial', 
+      icon: ClipboardList, 
+      label: isAdmin ? 'Historial Clínico' : 'Salud de mi Mascota' 
+    },
+    { 
+      to: '/recetas', 
+      icon: FileText, 
+      label: isAdmin ? 'Recetas Emitidas' : 'Mis Recetas' 
+    },
+    { 
+      to: '/seguimiento', 
+      icon: Activity, 
+      label: 'Seguimiento' 
+    },
+    { 
+      to: '/examenes', 
+      icon: FlaskConical, 
+      label: isAdmin ? 'Análisis Laboratorio' : 'Resultados de Exámenes' 
+    },
+    { 
+      to: '/inventario', 
+      icon: Package, 
+      label: 'Inventario', 
+      adminOnly: true 
+    },
+    { 
+      to: '/reportes', 
+      icon: BarChart3, 
+      label: 'Reportes', 
+      adminOnly: true 
+    },
+  ]
 
   const handleLogout = () => {
     logout()
     navigate('/login')
   }
 
-  const visibleItems = NAV_ITEMS.filter(item => !item.adminOnly || isAdmin)
+  // Filtramos los items según el rol
+  const visibleItems = NAV_ITEMS.filter(item => {
+    if (item.adminOnly && !isAdmin) return false;
+    return true;
+  });
 
   return (
     <aside className="sidebar">
@@ -66,16 +114,17 @@ export default function Sidebar() {
           <div className="sidebar-user-info">
             <div className="sidebar-user-name">{user?.nombre || 'Usuario'}</div>
             <div className="sidebar-user-role">
-              {user?.rol === 'admin' ? 'Médico Veterinario' : 'Propietario'}
+              {isAdmin ? 'Médico Veterinario' : 'Propietario'}
             </div>
           </div>
         </div>
-        <button onClick={handleLogout} className="sidebar-logout">
+        <button onClick={handleLogout} className="sidebar-logout" title="Cerrar sesión">
           <LogOut size={16} />
         </button>
       </div>
 
       <style>{`
+        /* ... (Tu CSS se mantiene igual) ... */
         .sidebar {
           position: fixed;
           top: 0; left: 0; bottom: 0;
