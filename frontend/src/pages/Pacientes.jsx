@@ -29,8 +29,8 @@ export default function Pacientes() {
   const loadAll = async () => {
     try {
       const [pRes, propRes] = await Promise.all([
-        api.get('/pacientes/'),
-        api.get('/propietarios/')
+        api.get('pacientes'),
+        api.get('propietarios')
       ])
       setPacientes(pRes.data)
       setPropietarios(propRes.data)
@@ -59,10 +59,10 @@ export default function Pacientes() {
     setSaving(true)
     try {
       if (editing) {
-        await api.put(`/pacientes/${editing.id}`, form)
+        await api.put(`pacientes/${editing.id}`, form)
         toast.success('Paciente actualizado')
       } else {
-        await api.post('/pacientes/', form)
+        await api.post('pacientes', form)
         toast.success('Paciente registrado')
       }
       setModal(false)
@@ -75,7 +75,7 @@ export default function Pacientes() {
   const handleDelete = async (id) => {
     if (!confirm('¿Eliminar este paciente?')) return
     try {
-      await api.delete(`/pacientes/${id}`)
+      await api.delete(`pacientes/${id}`)
       toast.success('Paciente eliminado')
       loadAll()
     } catch { toast.error('No se pudo eliminar') }

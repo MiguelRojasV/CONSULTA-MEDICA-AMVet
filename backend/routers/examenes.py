@@ -4,7 +4,7 @@ from database import get_db
 from auth import get_current_user
 import models, aiofiles, os
 
-router = APIRouter(prefix="/api/examenes", tags=["examenes"])
+router = APIRouter(tags=["examenes"])
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 

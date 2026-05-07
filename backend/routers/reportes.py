@@ -5,7 +5,7 @@ from database import get_db
 from auth import require_admin
 import models
 
-router = APIRouter(prefix="/api/reportes", tags=["reportes"])
+router = APIRouter(tags=["reportes"])
 
 @router.get("/resumen")
 def resumen(db: Session = Depends(get_db), user=Depends(require_admin)):

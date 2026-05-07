@@ -4,7 +4,7 @@ from database import get_db
 from auth import get_current_user
 import models, schemas
 
-router = APIRouter(prefix="/api/seguimiento", tags=["seguimiento"])
+router = APIRouter(tags=["seguimiento"])
 
 @router.get("/{paciente_id}")
 def listar(paciente_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)):

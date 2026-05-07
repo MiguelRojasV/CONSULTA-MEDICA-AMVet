@@ -4,7 +4,7 @@ from database import get_db
 from auth import get_current_user, require_admin
 import models, schemas
 
-router = APIRouter(prefix="/api/propietarios", tags=["propietarios"])
+router = APIRouter(tags=["propietarios"])
 
 @router.get("",response_model=list[schemas.PropietarioOut])
 def listar(db: Session = Depends(get_db), user=Depends(get_current_user)):
@@ -13,6 +13,28 @@ def listar(db: Session = Depends(get_db), user=Depends(get_current_user)):
     prop = db.query(models.Propietario).filter(models.Propietario.usuario_id == user.id).first()
     return [prop] if prop else []
 
+@router.post("", response_model=schemas.PropietarioOut)
+def crear(data: schemas.PropietarioCreate, db: Session = Depends(get_db), user=Depends(require_admin)):
+    try:
+        # Extraemos los datos del esquema
+        datos_propietario = data.model_dump()
+        
+        # Creamos la instancia del modelo
+        p = models.Propietario(**datos_propietario)
+        
+        # Si tu modelo Propietario tiene una relación con Usuario, 
+        # asegúrate de que no sea obligatoria en la DB o asígnale una aquí.
+        
+        db.add(p)
+        db.commit()
+        db.refresh(p)
+        return p
+    except Exception as e:
+        db.rollback()
+        # Esto te dirá exactamente qué falta en la terminal de Python
+        print(f"ERROR AL GUARDAR: {str(e)}") 
+        raise HTTPException(status_code=400, detail=f"Error en base de datos: {str(e)}")
+    
 @router.post("", response_model=schemas.PropietarioOut)
 def crear(data: schemas.PropietarioCreate, db: Session = Depends(get_db), user=Depends(require_admin)):
     p = models.Propietario(**data.model_dump())

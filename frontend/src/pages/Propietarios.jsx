@@ -42,10 +42,10 @@ export default function Propietarios() {
     setSaving(true)
     try {
       if (editing) {
-        await api.put(`/propietarios/${editing.id}`, form)
+        await api.put(`propietarios/${editing.id}`, form)
         toast.success('Propietario actualizado')
       } else {
-        await api.post('/propietarios', form)
+        await api.post('propietarios', form)
         toast.success('Propietario registrado')
       }
       setModal(false); load()

@@ -4,7 +4,7 @@ from database import get_db
 from auth import get_current_user
 import models, schemas
 
-router = APIRouter(prefix="/api/recetas", tags=["recetas"])
+router = APIRouter(tags=["recetas"])
 
 @router.get("/{historial_id}")
 def obtener(historial_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)):

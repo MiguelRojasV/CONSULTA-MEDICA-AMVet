@@ -4,9 +4,9 @@ from database import get_db
 from auth import get_current_user, require_admin
 import models, schemas
 
-router = APIRouter(prefix="/api/pacientes", tags=["pacientes"])
+router = APIRouter(tags=["pacientes"])
 
-@router.get("")
+@router.get("",response_model=list[schemas.PacienteOut])
 def listar(db: Session = Depends(get_db), user=Depends(get_current_user)):
     if user.rol == "admin":
         return db.query(models.Paciente).all()
@@ -14,7 +14,7 @@ def listar(db: Session = Depends(get_db), user=Depends(get_current_user)):
     if not prop: return []
     return db.query(models.Paciente).filter(models.Paciente.propietario_id == prop.id).all()
 
-@router.post("/", response_model=schemas.PacienteOut)
+@router.post("", response_model=schemas.PacienteOut)
 def crear(data: schemas.PacienteCreate, db: Session = Depends(get_db), user=Depends(get_current_user)):
     p = models.Paciente(**data.model_dump())
     db.add(p); db.commit(); db.refresh(p)

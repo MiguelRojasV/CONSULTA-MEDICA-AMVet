@@ -17,7 +17,7 @@ from routers import (
 # 1. Crear las tablas de la base de datos
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="AMVet API",redirect_slashes=True)
+app = FastAPI(title="AMVet API")
 
 # 2. Configuración de CORS mejorada
 app.add_middleware(
@@ -31,7 +31,7 @@ app.add_middleware(
 # 3. Gestión de archivos de exámenes (RF09)
 os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
+app.router.redirect_slashes = True
 # 4. Inclusión de rutas
 app.include_router(auth.router,prefix="/api/auth",tags=["auth"])
 app.include_router(propietarios.router,prefix="/api/propietarios",tags=["propietarios"])

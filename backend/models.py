@@ -1,5 +1,5 @@
 # backend/models.py
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Date, Time, Numeric, Text, CheckConstraint
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Date, Time, Numeric, Text, CheckConstraint,Float
 from sqlalchemy.orm import relationship
 from database import Base
 import datetime
@@ -19,13 +19,13 @@ class Usuario(Base):
 class Paciente(Base):
     __tablename__ = "pacientes"
     id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String)
+    especie = Column(String)
+    raza = Column(String, nullable=True)
+    edad = Column(Float, nullable=True) # <--- ¡ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ!
+    sexo = Column(String, nullable=True)
+    peso = Column(Float, nullable=True)
     propietario_id = Column(Integer, ForeignKey("propietarios.id"))
-    nombre = Column(String(80), nullable=False)
-    especie = Column(String(50), nullable=False)
-    raza = Column(String(80))
-    edad_anios = Column(Integer)
-    sexo = Column(String(10))
-    peso = Column(Numeric(5, 2))
     
     propietario = relationship("Propietario", back_populates="mascotas")
     citas = relationship("Cita", back_populates="paciente")
@@ -33,9 +33,11 @@ class Paciente(Base):
 class Propietario(Base):
     __tablename__ = "propietarios"
     id = Column(Integer, primary_key=True, index=True)
-    usuario_id = Column(Integer, ForeignKey("usuarios.id"))
-    ci = Column(String(20))
-    
+    nombre = Column(String)  # <--- Esta es la columna que faltaba en la tabla
+    direccion = Column(String, nullable=True)
+    telefono = Column(String, nullable=True)
+    correo = Column(String, nullable=True)
+    usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
     usuario = relationship("Usuario", back_populates="propietario_perfil")
     mascotas = relationship("Paciente", back_populates="propietario")
 

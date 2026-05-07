@@ -4,7 +4,7 @@ from database import get_db
 from auth import get_current_user
 import models, schemas
 
-router = APIRouter(prefix="/api/citas", tags=["citas"])
+router = APIRouter(tags=["citas"])
 
 @router.get("/")
 def listar(db: Session = Depends(get_db), user=Depends(get_current_user)):
